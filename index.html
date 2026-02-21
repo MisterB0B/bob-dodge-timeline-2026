@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bob Dodge — 2026 Implementation Timeline | The Light Park</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    :root {
+      --purple: #a855f7;
+      --teal: #06d6a0;
+      --bg: #0f1117;
+      --surface: #1a1d2e;
+      --border: #2a2f42;
+      --text: #e0e0e6;
+      --text-dim: #8a8f9e;
+      --green: #34c759;
+      --orange: #f97316;
+      --blue: #3b82f6;
+      --red: #ef4444;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 60px 24px;
+    }
+    
+    /* Header */
+    .header {
+      text-align: center;
+      margin-bottom: 60px;
+      padding-bottom: 40px;
+      border-bottom: 2px solid var(--border);
+    }
+    
+    .header h1 {
+      font-size: 42px;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--purple), var(--teal));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 12px;
+      letter-spacing: -1px;
+    }
+    
+    .header .subtitle {
+      font-size: 20px;
+      color: var(--text-dim);
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+    
+    .header .meta {
+      font-size: 14px;
+      color: var(--text-dim);
+      margin-top: 16px;
+    }
+    
+    /* Overview */
+    .overview {
+      background: linear-gradient(135deg, rgba(168,85,247,0.1), rgba(6,214,160,0.1));
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 40px;
+      margin-bottom: 60px;
+    }
+    
+    .overview h2 {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: var(--purple);
+    }
+    
+    .overview p {
+      font-size: 16px;
+      color: var(--text);
+      margin-bottom: 12px;
+      line-height: 1.8;
+    }
+    
+    .workstreams {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 16px;
+      margin-top: 24px;
+    }
+    
+    .workstream-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+    }
+    
+    .workstream-card h3 {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--purple);
+      margin-bottom: 8px;
+    }
+    
+    .workstream-card p {
+      font-size: 13px;
+      color: var(--text-dim);
+      line-height: 1.6;
+    }
+    
+    /* Timeline */
+    .timeline {
+      position: relative;
+      margin-top: 60px;
+    }
+    
+    .phase {
+      margin-bottom: 60px;
+      position: relative;
+    }
+    
+    .phase-header {
+      background: linear-gradient(135deg, var(--surface), rgba(168,85,247,0.1));
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px 32px;
+      margin-bottom: 24px;
+    }
+    
+    .phase-header h2 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--purple);
+    }
+    
+    .phase-header .phase-meta {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    
+    .phase-meta .dates {
+      font-size: 16px;
+      color: var(--teal);
+      font-weight: 600;
+    }
+    
+    .phase-meta .theme {
+      font-size: 14px;
+      color: var(--text-dim);
+      font-style: italic;
+    }
+    
+    /* Deliverables */
+    .deliverables {
+      display: grid;
+      gap: 16px;
+    }
+    
+    .deliverable-group {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+    }
+    
+    .deliverable-group h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .deliverable-group h3 .icon {
+      font-size: 20px;
+    }
+    
+    .deliverable-list {
+      list-style: none;
+    }
+    
+    .deliverable-list li {
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      font-size: 14px;
+      color: var(--text);
+      line-height: 1.6;
+      padding-left: 20px;
+      position: relative;
+    }
+    
+    .deliverable-list li:last-child {
+      border-bottom: none;
+    }
+    
+    .deliverable-list li::before {
+      content: "▸";
+      position: absolute;
+      left: 0;
+      color: var(--teal);
+      font-weight: 700;
+    }
+    
+    /* Milestones */
+    .milestones {
+      background: linear-gradient(135deg, rgba(6,214,160,0.1), rgba(168,85,247,0.1));
+      border: 1px solid var(--teal);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-top: 20px;
+    }
+    
+    .milestones h4 {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--teal);
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .milestones ul {
+      list-style: none;
+    }
+    
+    .milestones li {
+      font-size: 14px;
+      color: var(--text);
+      margin-bottom: 8px;
+      padding-left: 24px;
+      position: relative;
+    }
+    
+    .milestones li::before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: var(--green);
+      font-weight: 700;
+      font-size: 16px;
+    }
+    
+    /* Footer */
+    .footer {
+      margin-top: 80px;
+      padding-top: 40px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 14px;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .header h1 { font-size: 32px; }
+      .phase-header h2 { font-size: 22px; }
+      .container { padding: 40px 20px; }
+      .overview { padding: 24px; }
+    }
+    
+    @media print {
+      body { background: white; color: black; }
+      .phase-header { page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>2026 Implementation Timeline</h1>
+      <div class="subtitle">Technical & Creative Operations</div>
+      <div class="meta">
+        <strong>Bob Dodge</strong> — Production Designer | The Light Park<br>
+        Planning Horizon: February 2026 – January 2027
+      </div>
+    </div>
+    
+    <!-- Overview -->
+    <div class="overview">
+      <h2>Executive Summary</h2>
+      <p>This timeline organizes 12 new operational roles and existing responsibilities into <strong>5 strategic workstreams</strong> across <strong>4 quarterly phases</strong>. The plan sequences high-impact items first, leverages new hires to offload operational work, and batches related efforts to maximize efficiency.</p>
+      
+      <div class="workstreams">
+        <div class="workstream-card">
+          <h3>Infrastructure & Systems</h3>
+          <p>Shop Manager, inventory systems, xLights optimization</p>
+        </div>
+        <div class="workstream-card">
+          <h3>People & Knowledge</h3>
+          <p>Training, Prop Bible, warehouse operations transition</p>
+        </div>
+        <div class="workstream-card">
+          <h3>Creative & Brand</h3>
+          <p>Character development, new songs, content creation</p>
+        </div>
+        <div class="workstream-card">
+          <h3>Guest Experience</h3>
+          <p>Tent design, merch displays, mobile app development</p>
+        </div>
+        <div class="workstream-card">
+          <h3>Strategic Expansion</h3>
+          <p>Walk-through business planning</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Timeline -->
+    <div class="timeline">
+      
+      <!-- Phase 1 -->
+      <div class="phase">
+        <div class="phase-header">
+          <h2>Phase 1: Foundation & Quick Wins</h2>
+          <div class="phase-meta">
+            <span class="dates">February – April 2026</span>
+            <span class="theme">Get systems online, hire key people, stop the bleeding</span>
+          </div>
+        </div>
+        
+        <div class="deliverables">
+          <div class="deliverable-group">
+            <h3><span class="icon">🛠️</span> Infrastructure & Systems</h3>
+            <ul class="deliverable-list">
+              <li>Deploy Shop Manager app company-wide</li>
+              <li>Onboard team to Shop Manager system</li>
+              <li>Begin Flex inventory software setup & configuration</li>
+              <li>Audit current xLights layouts across all 8 venues</li>
+              <li>Begin xLights optimization: easier sequencing, faster render times, streamlined FPP deployment</li>
+            </ul>
+          </div>
+          
+          <div class="deliverable-group">
+            <h3><span class="icon">👥</span> People & Knowledge Transfer</h3>
+            <ul class="deliverable-list">
+              <li>Finalize hiring — AutoCAD Draftsman & Shop Manager</li>
+              <li>Onboard draftsman with tools, standards, file structure</li>
+              <li>Begin Prop Bible framework (table of contents, templates)</li>
+              <li>Reallocate props to existing parks and lay out in themed areas (reference marketing deck)</li>
+              <li>Onboard shop manager with warehouse SOPs and expectations</li>
+              <li>Train shop technician on controller upload process (2000+ units)</li>
+            </ul>
+          </div>
+          
+          <div class="deliverable-group">
+            <h3><span class="icon">🔧</span> Existing Responsibilities</h3>
+            <ul class="deliverable-list">
+              <li>Equipment maintenance — staff going through all inventory to ensure readiness for 2026 season (all venues)</li>
+              <li>Post-strike inventory reconciliation</li>
+              <li>Design work for 2026 season (8 venues)</li>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="milestones">
+          <h4>Key Milestones</h4>
+          <ul>
+            <li>Shop Manager app live by end of Feb</li>
+            <li>Both new hires onboarded by end of Mar</li>
+            <li>Flex inventory software configured with initial data by end of Apr</li>
+            <li>Prop Bible framework and first 10 entries complete by end of Apr</li>
+          </ul>
+        </div>
+      </div>
+      
+      <!-- Phase 2 -->
+      <div class="phase">
+        <div class="phase-header">
+          <h2>Phase 2: Build & Train</h2>
+          <div class="phase-meta">
+            <span class="dates">May – July 2026</span>
+            <span class="theme">Develop brand, train team, build systems</span>
+          </div>
+        </div>
+        
+        <div class="deliverables">
+          <div class="deliverable-group">
+            <h3><span class="icon">🛠️</span> Infrastructure & Systems</h3>
+            <ul class="deliverable-list">
+              <li>Complete Flex inventory data migration (all props, all venues)</li>
+              <li>Complete xLights optimization for all 8 venues (sequencing workflow, render performance, FPP deployment)</li>
+              <li>Update existing sequences for new optimized layouts</li>
+              <li>Integrate Flex with distribution workflow</li>
+            </ul>
+          </div>
+          
+          <div class="deliverable-group">
+            <h3><span class="icon">👥</span> People & Knowledge Transfer</h3>
+            <ul class="deliverable-list">
+              <li>Draftsman produces prop drawings (Bob reviews, delegates)</li>
+              <li>Prop Bible — assembly/disassembly instructions for all major props</li>
+              <li>Shop manager independently running warehouse operations</li>
+              <li>Shop technician independently uploading sequences/programs</li>
+              <li>Create training documentation for controller programming</li>
+            </ul>
+          </div>
+          
+          <div class="deliverable-group">
+            <h3><span class="icon">🎨</span> Creative & Brand</h3>
+            <ul class="deliverable-list">
+              <li>Define character universe bible (DJ Polar Ice, Pixel Penguin, Gnomies)</li>
+              <li>Commission 3 new songs for 2026 show</li>
+              <li>Create "bumper" tracks between songs for character dialog (bring personality to the show)</li>
+              <li>Send new songs for professional sequencing</li>
+              <li>Concept new character-driven sequences</li>
+              <li>Begin AI avatar development for characters</li>
+              <li>Design innovative prop concepts for 2026 characters</li>
+              <li>Beta test AI-driven sequencing software</li>
+            </ul>
+          </div>
+          
+          <div class="deliverable-group">
+            <h3><span class="icon">🎪</span> Guest Experience & Technology</h3>
+            <ul class="deliverable-list">
+              <li>Design cohesive check-in tent environment (standard for all 8 parks)</li>
+              <li>Create new merch display prototype for tents</li>
+              <li>Plan concessions/merch showcase integration in check-in</li>
+              <li>Begin mobile app architecture & design (in-house)</li>
+              <li>Develop mobile app MVP — core guest engagement features</li>
+              <li>Research AR game frameworks and geo-located audio tech</li>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="milestones">
+          <h4>Key Milestones</h4>
+          <ul>
+            <li>Full inventory digitized in Flex by end of Jun</li>
+            <li>All 8 venue xLights layouts optimized (sequencing, render times, FPP deployment) by end of Jul</li>
+            <li>Shop technician certified for independent controller uploads by end of Jun</li>
+            <li>Warehouse manager running daily ops independently by end of Jul</li>
+            <li>Character bible complete by end of May</li>
+            <li>AI sequencing software evaluated with initial results by end of Jul</li>
+            <li>Check-in tent design finalized and approved by end of Jun</li>
+            <li>Mobile app MVP (basic functionality) by end of Jul</li>
+          </ul>
+        </div>
+      </div>
+      
+      <!-- Phase 3 -->
+      <div class="phase">
+        <div class="phase-header">
+          <h2>Phase 3: Production & Integration</h2>
+          <div class="phase-meta">
+            <span class="dates">August – October 2026</span>
+            <span class="theme">Build season — everything comes together</span>
+          </div>
+        </div>
+        
+        <div class="deliverables">
+          <div class="deliverable-group">
+            <h3><span class="icon">🎨</span> Creative & Brand</h3>
+            <ul class="deliverable-list">
+              <li>Produce new character animations for shows</li>
+              <li>Finalize character voices and dialog tracks</li>
+              <li>Create new bumper tracks for all venues</li>
+              <li>Launch content creation campaigns (video, social, behind-the-scenes)</li>
+            </ul>
+          </div>
+          
+          <div class="deliverable-group">
+            <h3><span class="icon">🎪</span> Guest Experience & Technology</h3>
+            <ul class="deliverable-list">
+              <li>Build check-in tent prototypes at first 2 venues</li>
+              <li>Finalize mobile app features for launch</li>
+              <li>Beta test mobile app with internal team</li>
+              <li>Prepare app for public launch</li>
+            </ul>
+          </div>
+          
+          <div class="deliverable-group">
+            <h3><span class="icon">📈</span> Strategic Expansion</h3>
+            <ul class="deliverable-list">
+              <li>Research walk-through experience market</li>
+              <li>Develop proof-of-concept walk-through design</li>
+              <li>Cost estimate and feasibility study for walk-through expansion</li>
+            </ul>
+          </div>
+          
+          <div class="deliverable-group">
+            <h3><span class="icon">🔧</span> Build Season Operations</h3>
+            <ul class="deliverable-list">
+              <li>Venue installations at all 8 sites</li>
+              <li>Quality control testing across all systems</li>
+              <li>Final technical rehearsals and adjustments</li>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="milestones">
+          <h4>Key Milestones</h4>
+          <ul>
+            <li>New bumper tracks delivered for all venues by end of Sep</li>
+            <li>Check-in tents deployed at 2 pilot venues by end of Sep</li>
+            <li>Mobile app ready for public launch by end of Oct</li>
+            <li>Walk-through POC and feasibility study delivered by end of Oct</li>
+          </ul>
+        </div>
+      </div>
+      
+      <!-- Phase 4 -->
+      <div class="phase">
+        <div class="phase-header">
+          <h2>Phase 4: Launch, Operate & Refine</h2>
+          <div class="phase-meta">
+            <span class="dates">November 2026 – January 2027</span>
+            <span class="theme">Opening night, live operations, continuous improvement</span>
+          </div>
+        </div>
+        
+        <div class="deliverables">
+          <div class="deliverable-group">
+            <h3><span class="icon">🎪</span> Show Operations</h3>
+            <ul class="deliverable-list">
+              <li>Opening night across all 8 venues</li>
+              <li>Monitor guest feedback and app engagement</li>
+              <li>Real-time adjustments to shows based on feedback</li>
+              <li>Content creation during live season (behind-the-scenes, testimonials)</li>
+            </ul>
+          </div>
+          
+          <div class="deliverable-group">
+            <h3><span class="icon">📊</span> Analysis & Planning</h3>
+            <ul class="deliverable-list">
+              <li>Track season metrics (attendance, app usage, merch sales)</li>
+              <li>Gather team feedback on new systems and workflows</li>
+              <li>Identify improvement opportunities for 2027</li>
+            </ul>
+          </div>
+          
+          <div class="deliverable-group">
+            <h3><span class="icon">🔧</span> Post-Season Wrap-up</h3>
+            <ul class="deliverable-list">
+              <li>Lead strike team across all venues</li>
+              <li>Equipment maintenance — staff going through all inventory to ensure readiness for next season</li>
+              <li>Inventory reconciliation via Flex</li>
+              <li>Season retrospective — document lessons learned</li>
+              <li>Begin planning 2027 enhancements</li>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="milestones">
+          <h4>Key Milestones</h4>
+          <ul>
+            <li>Successful 2026 season launch across 8 venues</li>
+            <li>Mobile app live for opening weekend</li>
+            <li>15%+ of guests download/use app during first season</li>
+            <li>2027 enhancement plan delivered by end of Jan</li>
+          </ul>
+        </div>
+      </div>
+      
+    </div>
+    
+    <!-- Footer -->
+    <div class="footer">
+      <p><strong>Document Version:</strong> 1.1 (Updated February 21, 2026)</p>
+      <p>Bob Dodge — Production Designer | The Light Park</p>
+      <p>bobdodgecreative@gmail.com</p>
+    </div>
+  </div>
+</body>
+</html>
